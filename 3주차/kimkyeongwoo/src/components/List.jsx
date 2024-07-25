@@ -2,49 +2,48 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import TodoItem from "./TodoItem";
 
-const List = ({ todos, onToggle, onDelete }) => {
+const List = ({ todos, onDelete, onCheck }) => {
   const [search, setSearch] = useState("");
 
   const onChangeSearch = (e) => {
     setSearch(e.target.value);
   };
 
-  const filterdTodos = () => {
-    if (search === "") return todos;
-    else
-      return todos.filter((todo) =>
-        todo.content.toLowerCase().includes(search.toLowerCase())
-      );
+  const FilteredData = () => {
+    return todos.filter((todo) =>
+      todo.content.toLowerCase().includes(search.toLowerCase())
+    );
   };
-
   return (
     <ListSection>
-      <input
+      <SearchBar
         value={search}
         onChange={onChangeSearch}
         placeholder="검색어를 입력하세요"
-      ></input>
-      {filterdTodos().map((todo) => (
+      ></SearchBar>
+      {FilteredData().map((todo) => (
         <TodoItem
           key={todo.id}
-          todo={todo}
-          onToggle={onToggle}
+          id={todo.id}
+          content={todo.content}
+          date={todo.date}
+          isDone={todo.isDone}
           onDelete={onDelete}
-        />
+          onCheck={onCheck}
+        ></TodoItem>
       ))}
     </ListSection>
   );
 };
 
-const ListSection = styled.div`
-  & > input {
-    border: none;
-    border-bottom: 1px solid;
-    padding: 10px;
-  }
+const ListSection = styled.div``;
 
-  display: flex;
-  flex-direction: column;
+const SearchBar = styled.input`
+  width: 100%;
+  height: 30px;
+  border: none;
+  border-bottom: 1px solid;
+  outline: none;
 `;
 
 export default List;

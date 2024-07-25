@@ -1,38 +1,59 @@
 import React from "react";
 import styled from "styled-components";
+import { myRed, myHoverRed, myGreen, myHoverGreen } from "../color";
 
-const TodoItem = ({ todo, onToggle, onDelete }) => {
-  const onChangeCheckbox = () => {
-    onToggle(todo.id);
+const TodoItem = ({ id, content, date, isDone, onDelete, onCheck }) => {
+  const onClickDelete = () => {
+    onDelete(id);
   };
 
-  const onClickDelete = () => {
-    onDelete(todo.id);
+  const onChangeCheckbox = () => {
+    onCheck(id);
   };
   return (
     <div>
-      <Items>
+      <TodoItemSection isDone={isDone}>
         <input
-          checked={todo.isDone}
-          onChange={onChangeCheckbox}
+          checked={isDone}
+          value={isDone}
           type="checkbox"
+          onChange={onChangeCheckbox}
         ></input>
-        <span>{todo.content}</span>
-        <p>{todo.date}</p>
+        <Todo>{content}</Todo>
+        <AddedDate>{date}</AddedDate>
         <button onClick={onClickDelete}>삭제</button>
-      </Items>
+      </TodoItemSection>
     </div>
   );
 };
 
-const Items = styled.div`
-  & > span {
-    flex: 1;
+const TodoItemSection = styled.div`
+  & > button {
+    cursor: pointer;
+    height: 40px;
+    width: 50px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: ${(props) => (props.isDone ? myGreen : myRed)};
+    transition: 0.5s;
+  }
+
+  & > button:hover {
+    background-color: ${(props) => (props.isDone ? myHoverGreen : myHoverRed)};
   }
 
   display: flex;
+  height: 80px;
   gap: 20px;
   align-items: center;
+  border-bottom: 1px solid rgb(220, 220, 220);
 `;
+
+const Todo = styled.p`
+  flex: 1;
+`;
+
+const AddedDate = styled.p``;
 
 export default TodoItem;

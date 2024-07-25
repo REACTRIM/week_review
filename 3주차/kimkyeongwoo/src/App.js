@@ -1,48 +1,73 @@
-import "./App.css";
+/* eslint-disable array-callback-return */
+import React, { useEffect, useRef, useState } from "react";
 import Header from "./components/Header";
 import Editor from "./components/Editor";
 import List from "./components/List";
-import { useRef, useState } from "react";
+import styled from "styled-components";
 
-const mockDate = [];
+const App = () => {
+  const idRef = useRef(0);
+  const [todos, setTodos] = useState(
+    window.localStorage.getItem("todos")
+      ? JSON.parse(window.localStorage.getItem("todos"))
+      : []
+  );
 
-function App() {
-  const [todos, setTodos] = useState(mockDate);
-  const idRef = useRef(3);
+  useEffect(() => {
+    if (todos) {
+      const arrTodos = JSON.stringify(todos);
+      window.localStorage.setItem("todos", arrTodos);
+    }
+  }, [todos]);
 
   const onCreate = (content) => {
-    const newTodo = {
-      id: idRef.current++,
-      isDone: false,
-      content: content,
-      date: new Date().toLocaleDateString(),
-    };
-
-    setTodos([...todos, newTodo]);
+    setTodos([
+      ...todos,
+      {
+        id: idRef.current++,
+        content: content,
+        date: new Date().toLocaleDateString(),
+        isDone: false,
+      },
+    ]);
   };
 
-  const onToggle = (targetId) => {
+  const onDelete = (targetId) => {
+    return setTodos(todos.filter((todo) => todo.id !== targetId));
+  };
+
+  const onCheck = (targetId) => {
     setTodos(
       todos.map((todo) => {
         if (todo.id === targetId) {
           return { ...todo, isDone: !todo.isDone };
-        }
-        return { ...todo };
+        } else return todo;
       })
     );
   };
 
-  const onDelete = (targetId) => {
-    setTodos(todos.filter((todo) => todo.id !== targetId));
+  const onReset = () => {
+    setTodos([]);
   };
 
   return (
-    <div className="App">
-      <Header />
+    <Wrapper>
+      <Header onReset={onReset} />
       <Editor onCreate={onCreate} />
-      <List todos={todos} onToggle={onToggle} onDelete={onDelete} />
-    </div>
+      <List todos={todos} onDelete={onDelete} onCheck={onCheck} />
+    </Wrapper>
   );
-}
+};
+
+const Wrapper = styled.div`
+  width: 500px;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+  margin: 0 auto;
+  border: 1px solid rgb(220, 220, 220);
+  border-radius: 5px;
+`;
 
 export default App;
