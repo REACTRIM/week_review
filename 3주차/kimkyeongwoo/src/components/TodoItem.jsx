@@ -12,7 +12,7 @@ const TodoItem = ({ id, content, date, isDone, onDelete, onCheck }) => {
   };
   return (
     <div>
-      <TodoItemSection isDone={isDone}>
+      <TodoItemSection $isDone={isDone}>
         <input
           checked={isDone}
           value={isDone}
@@ -35,12 +35,12 @@ const TodoItemSection = styled.div`
     border: none;
     border-radius: 5px;
     color: white;
-    background-color: ${(props) => (props.isDone ? myGreen : myRed)};
+    background-color: ${(props) => (props.$isDone ? myGreen : myRed)};
     transition: 0.5s;
   }
 
   & > button:hover {
-    background-color: ${(props) => (props.isDone ? myHoverGreen : myHoverRed)};
+    background-color: ${(props) => (props.$isDone ? myHoverGreen : myHoverRed)};
   }
 
   display: flex;

@@ -1,53 +1,88 @@
 /* eslint-disable array-callback-return */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 import Header from "./components/Header";
 import Editor from "./components/Editor";
 import List from "./components/List";
 import styled from "styled-components";
 
+const todos_Reducer = (todos, action) => {
+  switch (action.type) {
+    case "added": {
+      return [
+        ...todos,
+        {
+          id: action.id,
+          content: action.content,
+          date: new Date().toLocaleDateString(),
+          isDone: false,
+        },
+      ];
+    }
+    case "deleted": {
+      return todos.filter((todo) => todo.id !== action.id);
+    }
+    case "checked": {
+      return todos.map((todo) => {
+        if (todo.id === action.id) {
+          return { ...todo, isDone: !todo.isDone };
+        } else return todo;
+      });
+    }
+    case "reset": {
+      return [];
+    }
+    default: {
+      throw Error("Unknown action " + action.type);
+    }
+  }
+};
+
+const initialTodos = () => {
+  if (window.localStorage.getItem("todos")) {
+    return JSON.parse(window.localStorage.getItem("todos"));
+  } else return [];
+};
+
+const forIdRef = () => {
+  if (window.localStorage.getItem("todos")) {
+    return JSON.parse(window.localStorage.getItem("todos")).length;
+  }
+};
+
 const App = () => {
-  const idRef = useRef(0);
-  const [todos, setTodos] = useState(
-    window.localStorage.getItem("todos")
-      ? JSON.parse(window.localStorage.getItem("todos"))
-      : []
-  );
+  const idRef = useRef(forIdRef());
+  const [todos, dispatch] = useReducer(todos_Reducer, null, initialTodos);
 
   useEffect(() => {
-    if (todos) {
-      const arrTodos = JSON.stringify(todos);
-      window.localStorage.setItem("todos", arrTodos);
-    }
+    window.localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
   const onCreate = (content) => {
-    setTodos([
-      ...todos,
-      {
-        id: idRef.current++,
-        content: content,
-        date: new Date().toLocaleDateString(),
-        isDone: false,
-      },
-    ]);
+    dispatch({
+      type: "added",
+      id: idRef.current++,
+      content: content,
+    });
   };
 
   const onDelete = (targetId) => {
-    return setTodos(todos.filter((todo) => todo.id !== targetId));
+    dispatch({
+      type: "deleted",
+      id: targetId,
+    });
   };
 
   const onCheck = (targetId) => {
-    setTodos(
-      todos.map((todo) => {
-        if (todo.id === targetId) {
-          return { ...todo, isDone: !todo.isDone };
-        } else return todo;
-      })
-    );
+    dispatch({
+      type: "checked",
+      id: targetId,
+    });
   };
 
   const onReset = () => {
-    setTodos([]);
+    dispatch({
+      type: "reset",
+    });
   };
 
   return (
