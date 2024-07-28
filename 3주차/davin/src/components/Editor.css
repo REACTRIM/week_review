@@ -1,0 +1,14 @@
+.Editor {
+  display: flex;
+}
+
+.Editor input {
+  flex: 1;
+  padding: 15px;
+}
+
+.Editor button {
+  cursor: pointer;
+  background-color: blue;
+  color: white;
+}
