@@ -1,0 +1,8 @@
+.List {
+  display: flex;
+  flex-direction: column;
+}
+
+.List > input {
+  padding: 15px;
+}
